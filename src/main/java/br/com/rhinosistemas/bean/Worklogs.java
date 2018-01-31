@@ -1,5 +1,7 @@
 package br.com.rhinosistemas.bean;
 
+import br.com.rhinosistemas.util.Util;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,6 +27,10 @@ public class Worklogs {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public Date getStartedDateDay() {
+        return Util.convertStringToDate(started);
 	}
 
 	public void setStarted(String started) {

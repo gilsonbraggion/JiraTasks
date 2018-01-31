@@ -1,5 +1,9 @@
 package br.com.rhinosistemas.model;
 
+import br.com.rhinosistemas.util.Util;
+
+import java.util.Date;
+
 public class Sprint {
 
 	private String name;
@@ -29,5 +33,14 @@ public class Sprint {
 	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}
+	
+	public Date getStartDateDay() {
+	    return Util.convertStringToDate(getStartDate());
+	}
+	
+	public Date getEndDateDay() {
+	    Date date = Util.convertStringToDate(getEndDate());
+        return Util.stringToDateFinalDia(date);
+    }
 
 }

@@ -1,0 +1,46 @@
+.log-error {
+	background-color: #EF5350;
+}
+
+.log-alert {
+	background-color: #FFF9C4;
+}
+
+.weekend {
+	background-color: #A5D6A7;
+}
+
+.monday {
+	border-left: 1px solid #000;
+}
+
+.friday {
+	border-right: 1px solid #000;
+}
+
+table {
+	font-size: 14px;
+}
+
+table.worklog-table tbody td {
+    padding: 0;
+}
+
+table.worklog-table td span {
+    padding: 8px 10px;
+    display: block;
+}
+
+div.DTFC_LeftWrapper table.dataTable.no-footer, div.DTFC_RightWrapper table.dataTable.no-footer {
+	border-right: 1px solid #000;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+	margin-left: 0 !important;
+}
+
+.dataTables_wrapper .dataTables_filter .search-icon {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+}

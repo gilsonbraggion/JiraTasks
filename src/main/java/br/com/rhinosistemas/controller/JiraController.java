@@ -1,13 +1,31 @@
 package br.com.rhinosistemas.controller;
 
+import br.com.rhinosistemas.bean.Issues;
+import br.com.rhinosistemas.bean.RetornoWorklog;
+import br.com.rhinosistemas.bean.Worklog;
+import br.com.rhinosistemas.bean.Worklogs;
+import br.com.rhinosistemas.model.Filtro;
+import br.com.rhinosistemas.model.HorasLogadas;
+import br.com.rhinosistemas.model.Sprint;
+import br.com.rhinosistemas.model.TableUser;
+import br.com.rhinosistemas.model.WorklogHours;
+import br.com.rhinosistemas.util.Util;
+
+import com.google.gson.Gson;
+
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 
@@ -16,17 +34,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.google.gson.Gson;
-
-import br.com.rhinosistemas.bean.Issues;
-import br.com.rhinosistemas.bean.RetornoWorklog;
-import br.com.rhinosistemas.bean.Worklog;
-import br.com.rhinosistemas.bean.Worklogs;
-import br.com.rhinosistemas.model.Filtro;
-import br.com.rhinosistemas.model.HorasLogadas;
-import br.com.rhinosistemas.model.Sprint;
-import br.com.rhinosistemas.util.Util;
 
 @Controller
 @RequestMapping(value = "/jira")
@@ -42,70 +49,59 @@ public class JiraController {
 	}
 	
 	
-	@PostMapping(value = "/pesquisarHorasLogadas")
+	@GetMapping(value = "/pesquisarHorasLogadas")
 	public String horasLogadas(HttpSession session, Filtro filtro, Model model) throws URISyntaxException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException, ParseException {
 		
-		String retornoDadosSprint = Util.realizarChamadaAgile(session, "sprint/9040");
-		Sprint retornoSpring = new Gson().fromJson(retornoDadosSprint, Sprint.class);
-		
-		
+//		String retornoDadosSprint = Util.realizarChamadaAgile(session, "sprint/9040");
+	    String retornoDadosSprint = Util.realizarChamadaAgile(session, "sprint/" + filtro.getSprint());
 		String retornoJson = Util.realizarChamadaRest(session, queryHorasLancadas(filtro.getKey(), filtro.getSprint()));
-		
 		RetornoWorklog retornoWorklog = new Gson().fromJson(retornoJson, RetornoWorklog.class);
 		
-		Map<String, HorasLogadas> mapRetorno = new HashMap<>();
+		Sprint sprint = new Gson().fromJson(retornoDadosSprint, Sprint.class);
 		
-		for (Issues issue : retornoWorklog.getIssues()) {
-			
-			Worklog worklog = issue.getFields().getWorklog();
-			
-			for (Worklogs work : worklog.getWorklogs()) {
-				
-				String nomeUsuario = work.getAuthor().getDisplayName();
-				Long horasRegistradas = work.getHoursSpent();
-				String dataRegistro = work.getStarted();
-				String dataMap = Util.formataData(dataRegistro);
-				
-				String chaveMap = nomeUsuario + dataMap; 
-				
-				HorasLogadas horas = new HorasLogadas();
-				if (!mapRetorno.containsKey(chaveMap)) {
-					
-					horas.setNomeUsuario(nomeUsuario);
-					Date data = Util.convertStringToDate(dataRegistro);
-					horas.setDataWorkLog(data);
-					
-					horas.setQuantidadeHoras(horasRegistradas);
-				} else {
-					horas = mapRetorno.get(chaveMap);
-					Long horasAcumuladas = horas.getQuantidadeHoras() + horasRegistradas;
-					horas.setQuantidadeHoras(horasAcumuladas);
-				}
-				
-				mapRetorno.put(chaveMap, horas);
-
-			}
-			
-		}
-		
-		System.out.println(mapRetorno);
-		
-//		Map<String, Map<Date, Long>> collect = retornoWorklog.getIssues().stream()
-//				.flatMap(e -> e.getFields().getWorklog().getWorklogs().stream())
-//				.collect(Collectors.groupingBy(
-//						e -> e.getAuthor().getDisplayName(),
-//						Collectors.groupingBy(Worklogs::getStartedDate
-//								, Collectors.summingLong(Worklogs::getHoursSpent) 
-//								)
-//						)
-//						);
-//		
-//		collect.forEach((k,v) -> System.out.println(k + " = " + v));
+		Set<Date> listaDatas = new TreeSet<>(retornoWorklog.getIssues().stream()
+                .flatMap(e -> e.getFields().getWorklog().getWorklogs().stream())
+                .map(Worklogs::getStartedDateDay)
+                .filter(date -> date.after(sprint.getStartDateDay()) && date.before(sprint.getEndDateDay()))
+                .collect(Collectors.toSet()));
+        
+        Map<String, Map<Date, Long>> collect = retornoWorklog.getIssues().stream()
+                .flatMap(e -> e.getFields().getWorklog().getWorklogs().stream())
+                .filter(e -> e.getStartedDateDay().after(sprint.getStartDateDay()) && e.getStartedDateDay().before(sprint.getEndDateDay()))
+                .collect(Collectors.groupingBy(
+                        e -> e.getAuthor().getDisplayName(),
+                        Collectors.groupingBy(Worklogs::getStartedDateDay
+                                , Collectors.summingLong(Worklogs::getHoursSpent) 
+                                )
+                        )
+                 );
+        
+        List<TableUser> users = new ArrayList<>();
+        collect.forEach((k,v) -> {
+           TableUser user = new TableUser();
+           user.setUser(k);
+           
+           List<WorklogHours> hours = new ArrayList<>();
+           for (Date date : listaDatas) {
+                Long time = v.get(date);
+                if (time == null) {
+                    time = 0l;
+                }
+                
+                hours.add(new WorklogHours(date, time));
+           }
+           user.setHours(hours);
+           users.add(user);
+        });
+        
+        model.addAttribute("listaDatas", listaDatas);
+        model.addAttribute("listaHoras", users);
+        
+        collect.forEach((k,v) -> System.out.println(k + " = " + v));
 		model.addAttribute("filtro", filtro);
 		
 		return "lancamentoHoras";
 	}
-	
 	
 	
 
@@ -129,27 +125,20 @@ public class JiraController {
 	 * Query para filtrar as horas lançadas por um projeto / Sprint
 	 * @return
 	 */
-		public String queryHorasLancadas(String projeto, String sprint ) {
-			StringBuilder builder = new StringBuilder();
-			
-			
-			builder.append("project = STIBR AND Sprint = 9040 ORDER BY assignee ASC");
-			
-//			builder.append("project="+projeto+"");
-//			
-//			if (StringUtils.isNotBlank(sprint)) {
-//				builder.append(" and ");
-//				builder.append("sprint="+sprint+"");
-//			}
-			
-			builder.append("&");
-			builder.append("fields=worklog");
-			builder.append("&");
-			builder.append("maxResults=9999");
-//			builder.append(" order by worklogAuthor ASC");
-			
-			return builder.toString();
+    public String queryHorasLancadas(String projeto, String sprint) {
+        StringBuilder builder = new StringBuilder();
 
-		}
+        builder.append("project = ").append(projeto)
+                .append(" AND Sprint = ").append(sprint)
+                .append(" ORDER BY assignee ASC");
+
+        builder.append("&");
+        builder.append("fields=worklog");
+        builder.append("&");
+        builder.append("maxResults=9999");
+
+        return builder.toString();
+
+    }
 		
 }

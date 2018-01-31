@@ -55,7 +55,7 @@ public class Util {
 		return null;
 	}
 	
-	public static Date stringToDateSemHoras(Date data) throws ParseException {
+	public static Date stringToDateSemHoras(Date data) {
 		Calendar dataSemHora = Calendar.getInstance();
 		dataSemHora.setTime(data);
 		dataSemHora.set(Calendar.HOUR, 0);
@@ -65,6 +65,17 @@ public class Util {
 		
 		return dataSemHora.getTime();
 	}
+	
+	public static Date stringToDateFinalDia(Date data) {
+        Calendar dataSemHora = Calendar.getInstance();
+        dataSemHora.setTime(data);
+        dataSemHora.set(Calendar.HOUR_OF_DAY, 23);
+        dataSemHora.set(Calendar.MINUTE, 59);
+        dataSemHora.set(Calendar.SECOND, 59);
+        dataSemHora.set(Calendar.MILLISECOND, 59);
+        
+        return dataSemHora.getTime();
+    }
 
 	public static String realizarChamadaRest(HttpSession session, String parametrosQuery) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 
