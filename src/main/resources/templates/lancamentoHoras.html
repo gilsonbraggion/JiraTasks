@@ -5,7 +5,7 @@
 <th:block th:replace="fragments/static :: static" />
 
 <meta charset="UTF-8" />
-<title>Jira - Lançamento horas</title>
+<title>Jira - Atividades em andamento</title>
 </head>
 <body>
 
@@ -13,7 +13,7 @@
 
 		<div th:replace="fragments/menu :: menu"></div>
 
-		<form th:action="@{/jira/pesquisarHorasLogadas}" th:object="${filtro}" th:method="GET">
+		<form th:action="@{/jira/pesquisarAtividadesAndamento}" th:object="${filtro}" th:method="GET">
 			<!-- Page Content -->
 			<div id="page-content-wrapper">
 				<div class="container-fluid">
@@ -34,6 +34,11 @@
 								<button type="submit" class="form-control btn btn-primary">Pesquisar</button>
 							</div>
 						</div>
+					</div>
+
+					<div class="alert alert-warning" th:if="${mensagemErro} != null">
+						<strong>Ooops!</strong>
+						<th:block th:utext="${mensagemErro}"></th:block>
 					</div>
 
 					<div th:if="${listaHoras} != null" >

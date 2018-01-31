@@ -1,15 +1,53 @@
 package br.com.rhinosistemas.model;
 
-public class AtividadesAndamento extends Fields {
+import java.util.Date;
 
-	private Integer quantidadeHoras;
+public class AtividadesAndamento {
 
-	public Integer getQuantidadeHoras() {
-		return quantidadeHoras;
+	private String key;
+	private String summary;
+	private String assignee;
+	private String status;
+	private Date dataAtualizacao;
+
+	public String getKey() {
+		return key;
 	}
 
-	public void setQuantidadeHoras(Integer quantidadeHoras) {
-		this.quantidadeHoras = quantidadeHoras;
+	public void setKey(String key) {
+		this.key = key;
+	}
+
+	public String getSummary() {
+		return summary;
+	}
+
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
+
+	public String getAssignee() {
+		return assignee;
+	}
+
+	public void setAssignee(String assignee) {
+		this.assignee = assignee;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public Date getDataAtualizacao() {
+		return dataAtualizacao;
+	}
+
+	public void setDataAtualizacao(Date dataAtualizacao) {
+		this.dataAtualizacao = dataAtualizacao;
 	}
 
 }

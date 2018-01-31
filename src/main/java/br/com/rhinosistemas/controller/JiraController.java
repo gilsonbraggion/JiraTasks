@@ -1,18 +1,5 @@
 package br.com.rhinosistemas.controller;
 
-import br.com.rhinosistemas.bean.Issues;
-import br.com.rhinosistemas.bean.RetornoWorklog;
-import br.com.rhinosistemas.bean.Worklog;
-import br.com.rhinosistemas.bean.Worklogs;
-import br.com.rhinosistemas.model.Filtro;
-import br.com.rhinosistemas.model.HorasLogadas;
-import br.com.rhinosistemas.model.Sprint;
-import br.com.rhinosistemas.model.TableUser;
-import br.com.rhinosistemas.model.WorklogHours;
-import br.com.rhinosistemas.util.Util;
-
-import com.google.gson.Gson;
-
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -20,7 +7,6 @@ import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,11 +15,23 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.google.gson.Gson;
+
+import br.com.rhinosistemas.bean.Issues;
+import br.com.rhinosistemas.bean.RetornoJson;
+import br.com.rhinosistemas.bean.Worklogs;
+import br.com.rhinosistemas.model.AtividadesAndamento;
+import br.com.rhinosistemas.model.Filtro;
+import br.com.rhinosistemas.model.Sprint;
+import br.com.rhinosistemas.model.TableUser;
+import br.com.rhinosistemas.model.WorklogHours;
+import br.com.rhinosistemas.util.Util;
 
 @Controller
 @RequestMapping(value = "/jira")
@@ -47,15 +45,20 @@ public class JiraController {
 		
 		return "lancamentoHoras";
 	}
-	
-	
+
 	@GetMapping(value = "/pesquisarHorasLogadas")
 	public String horasLogadas(HttpSession session, Filtro filtro, Model model) throws URISyntaxException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException, ParseException {
 		
-//		String retornoDadosSprint = Util.realizarChamadaAgile(session, "sprint/9040");
+		if (StringUtils.isBlank(filtro.getKey()) || StringUtils.isBlank(filtro.getSprint())) {
+			model.addAttribute("mensagemErro", "Todos os campos são obrigatórios");
+			model.addAttribute("filtro", filtro);
+			
+			return "lancamentoHoras";
+		}
+		
 	    String retornoDadosSprint = Util.realizarChamadaAgile(session, "sprint/" + filtro.getSprint());
 		String retornoJson = Util.realizarChamadaRest(session, queryHorasLancadas(filtro.getKey(), filtro.getSprint()));
-		RetornoWorklog retornoWorklog = new Gson().fromJson(retornoJson, RetornoWorklog.class);
+		RetornoJson retornoWorklog = new Gson().fromJson(retornoJson, RetornoJson.class);
 		
 		Sprint sprint = new Gson().fromJson(retornoDadosSprint, Sprint.class);
 		
@@ -97,18 +100,51 @@ public class JiraController {
         model.addAttribute("listaDatas", listaDatas);
         model.addAttribute("listaHoras", users);
         
-        collect.forEach((k,v) -> System.out.println(k + " = " + v));
 		model.addAttribute("filtro", filtro);
 		
 		return "lancamentoHoras";
 	}
 	
+	@GetMapping(value = "/atividadesAndamento")
+	public String iniciarAtividadesAndamento(HttpSession session, Model model) throws URISyntaxException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+		
+		Filtro filtro = new Filtro();
+		model.addAttribute("filtro", filtro);
+		
+		return "atividadesAndamento";
+	}
+	
+	@GetMapping(value = "/pesquisarAtividadesAndamento")
+	public String atividadesEmAndamento(HttpSession session, Filtro filtro, Model model) throws URISyntaxException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException, ParseException {
+		
+		if (StringUtils.isBlank(filtro.getKey()) || StringUtils.isBlank(filtro.getSprint())) {
+			model.addAttribute("mensagemErro", "Todos os campos são obrigatórios");
+			model.addAttribute("filtro", filtro);
+			return "atividadesAndamento";
+		}
+		
+		List<AtividadesAndamento> listaAtividades = new ArrayList<>();
+		String retornoJson = Util.realizarChamadaRest(session, queryAtividadesAndamento(filtro.getKey(), filtro.getSprint()));
+		
+		RetornoJson retornoIssues = new Gson().fromJson(retornoJson, RetornoJson.class);
+		
+		for (Issues issue : retornoIssues.getIssues()) {
+			AtividadesAndamento atividade = new AtividadesAndamento();
+			
+			atividade.setAssignee(issue.getFields().getAssignee().getDisplayName());
+			atividade.setKey(issue.getKey());
+			atividade.setSummary(issue.getFields().getSummary());
+			
+			listaAtividades.add(atividade);
+		}
+        
+		model.addAttribute("listaAtividades", listaAtividades);
+		model.addAttribute("filtro", filtro);
+		
+		return "atividadesAndamento";
+	}
 	
 
-//		String jqlQuery = "project = STIBR AND status = \"In Progress\" AND resolution = Unresolved AND Sprint = 9040 ORDER BY assignee ASC, updated DESC";
-
-//		String jqlQuery = "sprint=9040 AND key=STIBR-991 AND worklogdate >= 2018-01-01 AN";
-	
 		// String jqlQuery = "worklogAuthor ='Alexi de Lara' or worklogAuthor ='ADRIANO
 		// PAVAO' or worklogAuthor ='MONICA REIMBERG DE PAIVA' or worklogAuthor ='LUIS
 		// LINO' or worklogAuthor ='KRISHAN WEISE' or worklogAuthor ='Cesar Roma' or
@@ -128,9 +164,11 @@ public class JiraController {
     public String queryHorasLancadas(String projeto, String sprint) {
         StringBuilder builder = new StringBuilder();
 
-        builder.append("project = ").append(projeto)
-                .append(" AND Sprint = ").append(sprint)
-                .append(" ORDER BY assignee ASC");
+        builder.append("project = ").append(projeto);
+        
+        builder.append(" AND Sprint = ").append(sprint);
+        
+        builder.append(" ORDER BY assignee ASC");
 
         builder.append("&");
         builder.append("fields=worklog");
@@ -139,6 +177,25 @@ public class JiraController {
 
         return builder.toString();
 
+    }
+
+    /**
+     * Query para buscar atividades em andamento
+     * @return
+     */
+    public String queryAtividadesAndamento(String projeto, String sprint) {
+
+	    	StringBuilder builder = new StringBuilder();
+	    	
+	    	builder.append("project = "+projeto+"");
+	    	builder.append(" AND Sprint = "+sprint+"");
+	    	builder.append(" AND status = \"In Progress\"");
+	    	builder.append(" AND resolution = Unresolved");
+	    	builder.append(" ORDER BY assignee ASC, updated DESC");
+	    	builder.append("");
+	    	
+	    	return builder.toString();
+    	
     }
 		
 }
