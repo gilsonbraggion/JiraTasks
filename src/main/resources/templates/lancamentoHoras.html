@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+<th:block th:replace="fragments/static :: static" />
+
+<meta charset="UTF-8" />
+<title>Jira - Lançamento horas</title>
+</head>
+<body>
+
+	<div id="wrapper" class="toggled">
+
+		<div th:replace="fragments/menu :: menu"></div>
+
+		<form th:action="@{/jira/pesquisarHorasLogadas}" th:object="${filtro}" th:method="POST">
+			<!-- Page Content -->
+			<div id="page-content-wrapper">
+				<div class="container-fluid">
+					<h1>Lançamento de horas</h1>
+
+					<div id="filtro" class="col-md-12" style="padding-bottom: 25px;">
+						<div class="row">
+							<div class="col">
+								<label for="exampleInputEmail1">Nome Projeto</label>
+								<input class="form-control" th:field="*{key}"  />
+							</div>
+							<div class="col">
+								<label for="exampleInputPassword1">Sprint</label>
+								<input class="form-control" th:field="*{sprint}" />
+							</div>
+						</div>
+						<div class="row">
+							<div class="col">
+								<label for="exampleInputEmail1">Data inicial</label>
+								<input class="form-control datepicker" th:field="*{dataInicio}" />
+							</div>
+							<div class="col">
+								<label for="exampleInputPassword1">Data final</label>
+								<input class="form-control datepicker" th:field="*{dataFinal}" />
+							</div>
+							<div class="col">
+								<label for="exampleInputPassword1">&nbsp;</label>
+								<button type="submit" class="btn btn-primary">Pesquisar</button>
+							</div>
+						</div>
+					</div>
+
+					<table class="table table-striped" th:if="${listaHoras} != null">
+						<thead>
+							<tr>
+								<th scope="col">Usuario</th>
+								<th scope="col">Data</th>
+								<th scope="col">Quantidade Horas</th>
+							</tr>
+						</thead>
+						<tbody>
+							<th:block th:each="hora : ${listaHoras}">
+								<tr>
+									<th th:utext="${hora.nomeUsuario}">1</th>
+									<th th:utext="${#dates.format(hora.dataWorkLog, 'MMM-dd')}">1</th>
+									<th th:utext="${hora.quantidadeHoras}">1</th>
+								</tr>
+							</th:block>
+						</tbody>
+					</table>
+
+				</div>
+			</div>
+		</form>
+
+	</div>
+
+	<script>
+  $( function() {
+    $( ".datepicker" ).datepicker();
+  } );
+  </script>
+
+</body>
+</html>

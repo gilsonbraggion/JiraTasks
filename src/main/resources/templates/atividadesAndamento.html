@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+<link rel="stylesheet" type="text/css" href="bootstrap.min.css" th:href="@{/bootstrap.min.css}" />
+<link rel="stylesheet" type="text/css" href="bootstrap-grid.min.css" th:href="@{/bootstrap-grid.min.css}" />
+<link rel="stylesheet" type="text/css" href="main.css" th:href="@{/main.css}" />
+<script type="text/javascript" src="jquery-3.2.1.min.js" th:src="@{/jquery-3.2.1.min.js}"></script>
+<script type="text/javascript" src="bootstrap.min.js" th:src="@{/bootstrap.min.js}"></script>
+
+<meta charset="UTF-8" />
+<title>Consultas</title>
+</head>
+<body>
+
+	<div id="wrapper" class="toggled">
+
+		<div th:replace="fragments/menu :: menu">
+		</div>
+
+
+		<!-- Page Content -->
+		<div id="page-content-wrapper">
+			<div class="container-fluid">
+				<h1>Atividades em andamento</h1>
+
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th scope="col">Key</th>
+							<th scope="col">Descrição</th>
+							<th scope="col">Responsável</th>
+							<th scope="col">Status</th>
+							<th scope="col">Horas</th>
+							<th scope="col">Updated</th>
+						</tr>
+					</thead>
+					<tbody>
+						<th:block th:each="atividade : ${listaAtividades}">
+						<tr>
+							<th th:utext="${atividade.key}">1</th>
+							<th th:utext="${atividade.summary}">1</th>
+							<th th:utext="${atividade.assignee}">1</th>
+							<th th:utext="${atividade.status}">1</th>
+							<th th:utext="${atividade.quantidadeHoras}">1</th>
+							<th th:utext="${atividade.dataAtualizacao}">1</th>
+						</tr>
+						</th:block>
+					</tbody>
+				</table>
+
+			</div>
+		</div>
+
+	</div>
+
+</body>
+</html>
