@@ -67,20 +67,8 @@ public class Util {
 	}
 
 	public static String realizarChamadaRest(HttpSession session, String parametrosQuery) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
-		TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-		SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
 
-		SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
-
-		CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
-
-		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-
-		requestFactory.setHttpClient(httpClient);
-		RestTemplate restTemplate = new RestTemplate(requestFactory);
-
-		restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-
+		RestTemplate restTemplate = getRestTemplate();
 		HttpHeaders headers = createHeadersWithAuthentication(session);
 		
 		@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -91,6 +79,21 @@ public class Util {
 		});
 
 
+		return rateResponse.getBody();
+	}
+
+	public static String realizarChamadaAgile(HttpSession session, String parametrosQuery) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+		RestTemplate restTemplate = getRestTemplate();
+		HttpHeaders headers = createHeadersWithAuthentication(session);
+		
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		HttpEntity<?> requestEntity = new HttpEntity(headers);
+
+		String transactionUrl = "https://jira.ci.gsnet.corp/rest/agile/1.0/"+parametrosQuery;
+		ResponseEntity<String> rateResponse = restTemplate.exchange(transactionUrl, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<String>() {
+		});
+		
+		
 		return rateResponse.getBody();
 	}
 
@@ -106,6 +109,24 @@ public class Util {
 		headers.add("Authorization", "Basic " + base64Creds);
 
 		return headers;
+	}
+	
+	public static RestTemplate getRestTemplate() throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+		TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
+		SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
+
+		SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
+
+		CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
+
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+
+		requestFactory.setHttpClient(httpClient);
+		RestTemplate restTemplate = new RestTemplate(requestFactory);
+
+		restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+		
+		return restTemplate;
 	}
 
 }

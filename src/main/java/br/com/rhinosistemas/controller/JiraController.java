@@ -25,6 +25,7 @@ import br.com.rhinosistemas.bean.Worklog;
 import br.com.rhinosistemas.bean.Worklogs;
 import br.com.rhinosistemas.model.Filtro;
 import br.com.rhinosistemas.model.HorasLogadas;
+import br.com.rhinosistemas.model.Sprint;
 import br.com.rhinosistemas.util.Util;
 
 @Controller
@@ -43,6 +44,10 @@ public class JiraController {
 	
 	@PostMapping(value = "/pesquisarHorasLogadas")
 	public String horasLogadas(HttpSession session, Filtro filtro, Model model) throws URISyntaxException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException, ParseException {
+		
+		String retornoDadosSprint = Util.realizarChamadaAgile(session, "sprint/9040");
+		Sprint retornoSpring = new Gson().fromJson(retornoDadosSprint, Sprint.class);
+		
 		
 		String retornoJson = Util.realizarChamadaRest(session, queryHorasLancadas(filtro.getKey(), filtro.getSprint()));
 		
