@@ -5,6 +5,7 @@ public class Filtro {
 	private String key;
 	private String sprint;
 	private String fields;
+	private String sprintName;
 
 	public String getKey() {
 		return key;
@@ -30,4 +31,11 @@ public class Filtro {
 		this.fields = fields;
 	}
 
+	public String getSprintName() {
+		return sprintName;
+	}
+
+	public void setSprintName(String sprintName) {
+		this.sprintName = sprintName;
+	}
 }

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -62,15 +61,33 @@ public class JiraController {
 		
 		Sprint sprint = new Gson().fromJson(retornoDadosSprint, Sprint.class);
 		
-		Set<Date> listaDatas = new TreeSet<>(retornoWorklog.getIssues().stream()
+		TreeSet<Date> listaDatas = new TreeSet<>(retornoWorklog.getIssues().stream()
                 .flatMap(e -> e.getFields().getWorklog().getWorklogs().stream())
                 .map(Worklogs::getStartedDateDay)
-                .filter(date -> date.after(sprint.getStartDateDay()) && date.before(sprint.getEndDateDay()))
+                .filter(date -> date.compareTo(sprint.getStartDateDay()) >= 0 && date.compareTo(sprint.getEndDateDay()) <= 0 )
                 .collect(Collectors.toSet()));
+		
+		/*if (listaDatas.size() < 15) {
+			Date dt = listaDatas.last();
+			Calendar cal = GregorianCalendar.getInstance();
+			cal.setTime(dt);
+			while (listaDatas.size() < 15) {
+				cal.add(Calendar.DAY_OF_MONTH, 1);
+				int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+				if (dayOfWeek == 0) {
+					cal.add(Calendar.DAY_OF_MONTH, 1);	
+				} else if (dayOfWeek == 7) {
+					cal.add(Calendar.DAY_OF_MONTH, 2);
+				}
+				
+				listaDatas.add(cal.getTime());
+			}
+		}*/
+		
         
         Map<String, Map<Date, Long>> collect = retornoWorklog.getIssues().stream()
                 .flatMap(e -> e.getFields().getWorklog().getWorklogs().stream())
-                .filter(e -> e.getStartedDateDay().after(sprint.getStartDateDay()) && e.getStartedDateDay().before(sprint.getEndDateDay()))
+                .filter(e -> e.getStartedDate().compareTo(sprint.getStartDateDay()) >= 0 && e.getStartedDate().compareTo(sprint.getEndDateDay()) <= 0)
                 .collect(Collectors.groupingBy(
                         e -> e.getAuthor().getDisplayName(),
                         Collectors.groupingBy(Worklogs::getStartedDateDay
@@ -82,7 +99,7 @@ public class JiraController {
         List<TableUser> users = new ArrayList<>();
         collect.forEach((k,v) -> {
            TableUser user = new TableUser();
-           user.setUser(k);
+           user.setUser(k.toUpperCase());
            
            List<WorklogHours> hours = new ArrayList<>();
            for (Date date : listaDatas) {
@@ -96,6 +113,15 @@ public class JiraController {
            user.setHours(hours);
            users.add(user);
         });
+
+        // tira o nome cagado da sprint
+        int delimitador = sprint.getName().indexOf("{");
+        if (delimitador > 0) {
+        	filtro.setSprintName(sprint.getName().substring(0, delimitador));
+        } else {
+        	filtro.setSprintName(sprint.getName());
+        }
+        
         
         model.addAttribute("listaDatas", listaDatas);
         model.addAttribute("listaHoras", users);
@@ -185,16 +211,16 @@ public class JiraController {
      */
     public String queryAtividadesAndamento(String projeto, String sprint) {
 
-	    	StringBuilder builder = new StringBuilder();
-	    	
-	    	builder.append("project = "+projeto+"");
-	    	builder.append(" AND Sprint = "+sprint+"");
-	    	builder.append(" AND status = \"In Progress\"");
-	    	builder.append(" AND resolution = Unresolved");
-	    	builder.append(" ORDER BY assignee ASC, updated DESC");
-	    	builder.append("");
-	    	
-	    	return builder.toString();
+    	StringBuilder builder = new StringBuilder();
+    	
+    	builder.append("project = "+projeto+"");
+    	builder.append(" AND Sprint = "+sprint+"");
+    	builder.append(" AND status = \"In Progress\"");
+    	builder.append(" AND resolution = Unresolved");
+    	builder.append(" ORDER BY assignee ASC, updated DESC");
+    	builder.append("");
+    	
+    	return builder.toString();
     	
     }
 		

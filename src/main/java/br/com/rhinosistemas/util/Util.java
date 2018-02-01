@@ -27,6 +27,8 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import br.com.rhinosistemas.model.Usuario;
+
 public class Util {
 
 	public static Date convertStringToDate(String data) {
@@ -109,10 +111,8 @@ public class Util {
 	}
 
 	public static HttpHeaders createHeadersWithAuthentication(HttpSession session) {
-		// Usuario usuario = (Usuario) session.getAttribute("usuario");
-
-		// String plainCreds = usuario.getUsuario() + ":" + usuario.getPassword();
-		String plainCreds = "xb188164" + ":" + "Gilson001";
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+		String plainCreds = usuario.getUsuario() + ":" + usuario.getPassword();
 		byte[] base64CredsBytes = Base64.getEncoder().encode(plainCreds.getBytes());
 		String base64Creds = new String(base64CredsBytes);
 

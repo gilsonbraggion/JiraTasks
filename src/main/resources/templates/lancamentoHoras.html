@@ -17,9 +17,10 @@
 			<!-- Page Content -->
 			<div id="page-content-wrapper">
 				<div class="container-fluid">
-					<h1>Lançamento de horas</h1>
+					<h1 class="hidden-print">Lançamento de horas</h1>
+					<h1 class="visible-print-block" th:utext="|*{sprintName}|"></h1>
 
-					<div id="filtro" class="col-md-12" style="padding-bottom: 25px;">
+					<div id="filtro" class="col-md-12 hidden-print" style="padding-bottom: 25px;">
 						<div class="row">
 							<div class="col">
 								<label for="exampleInputEmail1">Nome Projeto</label>
@@ -107,6 +108,7 @@
 								var inputSearch = $('.dataTables_filter input[type=search]');
 								inputSearch.addClass('form-control input-sm');
 								inputSearch.prop('placeholder', 'Filtrar...');
+								inputSearch.parent().addClass("hidden-print");
 								inputSearch.parent().append('<i class="search-icon fa fa-search"></i>');
 							});
 						</script>
@@ -117,12 +119,6 @@
 		</form>
 
 	</div>
-
-	<script>
-  $( function() {
-    $( ".datepicker" ).datepicker();
-  } );
-  </script>
 
 </body>
 </html>

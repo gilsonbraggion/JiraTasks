@@ -44,3 +44,14 @@ div.DTFC_LeftWrapper table.dataTable.no-footer, div.DTFC_RightWrapper table.data
 	right: 10px;
 	top: 10px;
 }
+
+.table.dataTable {
+	margin: 0;
+    border-right: 1px solid #000;
+}
+
+@media print {
+	#wrapper.toggled {
+		padding-left: 0;
+	}
+}
