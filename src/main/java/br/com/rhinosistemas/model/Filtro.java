@@ -1,10 +1,16 @@
 package br.com.rhinosistemas.model;
 
-public class Filtro {
+import java.io.Serializable;
+import java.util.Date;
+
+public class Filtro implements Serializable {
+
+	private static final long serialVersionUID = -4234636855578637686L;
 
 	private String key;
 	private String sprint;
 	private String fields;
+	private Date dataInicio;
 	private String sprintName;
 
 	public String getKey() {
@@ -38,4 +44,13 @@ public class Filtro {
 	public void setSprintName(String sprintName) {
 		this.sprintName = sprintName;
 	}
+
+	public Date getDataInicio() {
+		return dataInicio;
+	}
+
+	public void setDataInicio(Date dataInicio) {
+		this.dataInicio = dataInicio;
+	}
+
 }

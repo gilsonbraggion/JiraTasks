@@ -1,6 +1,10 @@
 package br.com.rhinosistemas.model;
 
-public class Usuario {
+import java.io.Serializable;
+
+public class Usuario implements Serializable {
+
+	private static final long serialVersionUID = 6811069287078734441L;
 
 	private String usuario;
 	private String password;

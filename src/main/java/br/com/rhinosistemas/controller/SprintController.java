@@ -6,11 +6,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 
@@ -24,37 +20,36 @@ import com.google.gson.Gson;
 
 import br.com.rhinosistemas.bean.Issues;
 import br.com.rhinosistemas.bean.RetornoJson;
-import br.com.rhinosistemas.bean.Worklogs;
 import br.com.rhinosistemas.model.AtividadesAndamento;
 import br.com.rhinosistemas.model.Filtro;
 import br.com.rhinosistemas.model.Sprint;
-import br.com.rhinosistemas.model.TableUser;
-import br.com.rhinosistemas.model.WorklogHours;
 import br.com.rhinosistemas.util.JiraUtil;
 import br.com.rhinosistemas.util.QueryUtil;
 import br.com.rhinosistemas.util.TabelaUtil;
 
 @Controller
-@RequestMapping(value = "/jira")
-public class JiraController {
+@RequestMapping(value = "/sprint")
+public class SprintController {
 
-	@GetMapping(value = "/horasLogadasPorSprint")
+	private static final String HORAS_SPRINT = "horasSprint";
+
+	@GetMapping(value = "/horasLogadasSprint")
 	public String iniciarHorasLogadas(HttpSession session, Model model) throws URISyntaxException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 
 		Filtro filtro = new Filtro();
 		model.addAttribute("filtro", filtro);
 
-		return "lancamentoHoras";
+		return HORAS_SPRINT;
 	}
 
-	@GetMapping(value = "/pesquisarHorasLogadas")
+	@GetMapping(value = "/pesquisarHorasLogadasSprint")
 	public String horasLogadas(HttpSession session, Filtro filtro, Model model) throws URISyntaxException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException, ParseException {
 
 		if (StringUtils.isBlank(filtro.getKey()) || StringUtils.isBlank(filtro.getSprint())) {
 			model.addAttribute("mensagemErro", "Todos os campos são obrigatórios");
 			model.addAttribute("filtro", filtro);
 
-			return "lancamentoHoras";
+			return HORAS_SPRINT;
 		}
 
 		String retornoDadosSprint = JiraUtil.realizarChamadaAgile(session, "sprint/" + filtro.getSprint());
@@ -108,7 +103,7 @@ public class JiraController {
 
 		model.addAttribute("filtro", filtro);
 
-		return "lancamentoHoras";
+		return HORAS_SPRINT;
 	}
 
 	@GetMapping(value = "/atividadesAndamento")

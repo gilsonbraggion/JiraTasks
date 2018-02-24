@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+<th:block th:replace="fragments/static :: static" />
+
+<meta charset="UTF-8" />
+<title>Jira - Lançamento de horas</title>
+</head>
+<body>
+
+	<div id="wrapper" class="toggled">
+
+		<div th:replace="fragments/menu :: menu"></div>
+
+		<form th:action="@{/usuario/pesquisarHorasLogadasUsuario}" th:object="${filtro}" th:method="GET">
+			<!-- Page Content -->
+			<div id="page-content-wrapper">
+				<div class="container-fluid">
+					<h1 class="hidden-print">Lançamento de horas por Usuário</h1>
+
+					<div id="filtro" class="col-md-12 hidden-print" style="padding-bottom: 25px;">
+						<div class="row">
+							<div class="col">
+								<label >Data Início</label>
+								<input class="form-control campoData" th:field="*{dataInicio}"  />
+							</div>
+							<div class="col">
+								<label >Sprint</label>
+								<input class="form-control" th:field="*{sprint}" />
+							</div>
+							<div class="col">
+								<label >&nbsp;</label>
+								<button type="submit" class="form-control btn btn-primary">Pesquisar</button>
+							</div>
+						</div>
+					</div>
+
+					<div class="alert alert-warning" th:if="${mensagemErro} != null">
+						<strong>Ooops!</strong>
+						<th:block th:utext="${mensagemErro}"></th:block>
+					</div>
+
+					<div th:if="${listaHoras} != null" >
+						<table id="horasLogadas" class="worklog-table table table-striped display">
+							<thead>
+								<tr>
+									<th scope="col" style="border-bottom: 0;"></th>
+									<th:block th:each="data : ${listaDatas}">
+										<th th:utext="${#dates.format(data, 'EEE')}" 
+											th:classAppend="${#dates.dayOfWeek(data)} == 7 or ${#dates.dayOfWeek(data)} == 1 ? 'weekend' : 
+													(${#dates.dayOfWeek(data)} == 2 ? 'monday' : (${#dates.dayOfWeek(data)} == 6 ? 'friday' : ''))"></th>
+									</th:block>
+								</tr>
+								<tr th:if="${not #lists.isEmpty(listaDatas)}">
+									<th scope="col" style="border-top: 0;">Usuário</th>
+									<th:block th:each="data : ${listaDatas}">
+										<th th:utext="${#dates.format(data, 'MMM-dd')}"></th>
+									</th:block>
+								</tr>
+							</thead>
+							<tbody>
+								<th:block th:each="hora : ${listaHoras}">
+									<tr>
+										<td><span th:utext="${hora.user}">1</span></td>
+										<th:block th:each="date : ${hora.hours}">
+											<td th:classAppend="${#dates.dayOfWeek(date.date)} == 7 or ${#dates.dayOfWeek(date.date)} == 1 ? 'weekend' : 
+													(${#dates.dayOfWeek(date.date)} == 2 ? 'monday' : (${#dates.dayOfWeek(date.date)} == 6 ? 'friday' : ''))"
+											class="text-center"><span th:utext="${date.time}" th:classAppend="${date.htmlClass}">1</span></td>
+										</th:block>
+									</tr>
+								</th:block>
+							</tbody>
+						</table>
+						
+						<script>
+							$(document).ready(function() {
+								debugger;
+								
+								$('#horasLogadas').DataTable({
+									scrollY : "350px",
+									scrollX : true,
+									scrollCollapse : true,
+									paging : false,
+									columnDefs : [ {
+										width : 270,
+										targets : 0
+									} ],
+									fixedColumns : {
+										leftColumns : 1
+									},
+									language: {
+							            processing:     "Processando...",
+							            search:         "",
+							            zeroRecords:    "Sabe nem digitar.",
+							            emptyTable:     "Tá vazio, pesquisa direito.",
+							            info:           "Mostrando _START_ até _END_ de _TOTAL_",
+							            infoEmpty:      "Nada para mostrar",
+							            infoFiltered:   "(Filtrando de _MAX_ elementos no total)",
+							            paginate: {
+							                first:      "Primeiro",
+							                previous:   "Anterior",
+							                next:       "Próximo",
+							                last:       "Útilmo"
+							            }
+							        }
+								});
+								
+								var inputSearch = $('.dataTables_filter input[type=search]');
+								inputSearch.addClass('form-control input-sm');
+								inputSearch.prop('placeholder', 'Filtrar...');
+								inputSearch.parent().addClass("hidden-print");
+								inputSearch.parent().append('<i class="search-icon fa fa-search"></i>');
+								
+								debugger;
+								mascaraData();
+							});
+							
+						</script>
+					</div>
+
+				</div>
+			</div>
+		</form>
+
+	</div>
+
+</body>
+</html>
