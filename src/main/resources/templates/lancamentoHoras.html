@@ -43,7 +43,7 @@
 					</div>
 
 					<div th:if="${listaHoras} != null" >
-						<table id="users" class="worklog-table table table-striped display">
+						<table id="horasLogadas" class="worklog-table table table-striped display">
 							<thead>
 								<tr>
 									<th scope="col" style="border-bottom: 0;"></th>
@@ -76,7 +76,7 @@
 						
 						<script>
 							$(document).ready(function() {
-								$('#users').DataTable({
+								$('#horasLogadas').DataTable({
 									scrollY : "350px",
 									scrollX : true,
 									scrollCollapse : true,

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import br.com.rhinosistemas.model.Usuario;
-import br.com.rhinosistemas.util.JiraUtil;
+import br.com.rhinosistemas.util.JiraSingleton;
 
 @Controller()
 public class LoginController {
@@ -34,7 +34,7 @@ public class LoginController {
 		
 		session.setAttribute("usuario", usuario);
 		
-		JiraUtil.getAccountService(session);
+		JiraSingleton.getAccountService(session);
 		
 		return "filtros";
 	}
