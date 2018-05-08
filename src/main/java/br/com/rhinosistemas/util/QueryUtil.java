@@ -10,9 +10,7 @@ public class QueryUtil {
 	public static String queryHorasLancadas(String projeto, String sprint) {
 		StringBuilder builder = new StringBuilder();
 
-		builder.append("project = ").append(projeto);
-
-		builder.append(" AND Sprint = ").append(sprint);
+		builder.append(" Sprint = ").append(sprint);
 
 		builder.append(" ORDER BY assignee ASC");
 

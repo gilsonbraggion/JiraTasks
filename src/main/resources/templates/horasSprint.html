@@ -23,7 +23,7 @@
 					<div id="filtro" class="col-md-12 hidden-print" style="padding-bottom: 25px;">
 						<div class="row">
 							<div class="col">
-								<label >Board</label>
+								<label >Equipe</label>
 								<select id="selectBoard" class="form-control" th:field="*{key}">
 									<option value="" label="Selecione..."></option>
 									<option value="2482" label="Bolts"></option>
@@ -33,23 +33,14 @@
 								</select>
 							</div>
 							<div class="col">
-								<label >Sprints Ativas</label>
-								<select class="form-control" th:field="*{key}">
+								<label >Sprint Ativas</label>
+								<select class="form-control" th:field="*{sprint}">
+									<option value="11567">Hummer Mai</option>
 									<th:block th:each="item : ${sprints}">
 										<option value="NOVOMODELO" th:label="${item}"></option>
 									</th:block>
 									
 								</select>
-							</div>
-							<div class="col">
-							</div>
-						</div>
-						<div class="row">
-							<div class="col">
-							</div>
-							<div class="col">
-								<label for="exampleInputPassword1">Sprint</label>
-								<input class="form-control" th:field="*{sprint}" />
 							</div>
 							<div class="col">
 								<label for="exampleInputPassword1">&nbsp;</label>
@@ -95,44 +86,6 @@
 							</tbody>
 						</table>
 						
-						<script>
-							$(document).ready(function() {
-								$('#horasLogadas').DataTable({
-									scrollY : "350px",
-									scrollX : true,
-									scrollCollapse : true,
-									paging : false,
-									columnDefs : [ {
-										width : 270,
-										targets : 0
-									} ],
-									fixedColumns : {
-										leftColumns : 1
-									},
-									language: {
-							            processing:     "Processando...",
-							            search:         "",
-							            zeroRecords:    "Sabe nem digitar.",
-							            emptyTable:     "Tá vazio, pesquisa direito.",
-							            info:           "Mostrando _START_ até _END_ de _TOTAL_",
-							            infoEmpty:      "Nada para mostrar",
-							            infoFiltered:   "(Filtrando de _MAX_ elementos no total)",
-							            paginate: {
-							                first:      "Primeiro",
-							                previous:   "Anterior",
-							                next:       "Próximo",
-							                last:       "Útilmo"
-							            }
-							        }
-								});
-								
-								var inputSearch = $('.dataTables_filter input[type=search]');
-								inputSearch.addClass('form-control input-sm');
-								inputSearch.prop('placeholder', 'Filtrar...');
-								inputSearch.parent().addClass("hidden-print");
-								inputSearch.parent().append('<i class="search-icon fa fa-search"></i>');
-							});
-						</script>
 					</div>
 
 				</div>
