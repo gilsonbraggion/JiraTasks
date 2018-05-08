@@ -19,19 +19,27 @@
 				<div class="container-fluid">
 					<h1>Atividades em Andamento</h1>
 
-					<div id="filtro" class="col-md-12" style="padding-bottom: 25px;">
+					<div id="filtro" class="col-md-12 hidden-print" style="padding-bottom: 25px;">
 						<div class="row">
 							<div class="col">
-								<label for="exampleInputEmail1">Nome Projeto</label>
-								<input class="form-control" th:field="*{key}" />
+								<label >Equipe</label>
+								<select id="selectBoard" class="form-control" th:field="*{key}">
+									<option value="" label="Selecione..."></option>
+									<option value="2482" label="Bolts"></option>
+									<option value="4268" label="Inimigos HD"></option>
+									<option value="2516" label="Kanbantroopers"></option>
+									<option value="2970" label="System Team"></option>
+								</select>
 							</div>
 							<div class="col">
-								<label for="exampleInputPassword1">Sprint</label>
-								<input class="form-control" th:field="*{sprint}" />
+								<label >Sprint Ativas</label>
+								<select class="form-control" th:field="*{sprint}">
+									<option id="optionSelected" value="" label=""></option>
+								</select>
 							</div>
 							<div class="col">
 								<label for="exampleInputPassword1">&nbsp;</label>
-								<button type="submit" class="form-control btn btn-primary">Pesquisar</button>
+								<button id="pesquisar" type="submit" class="form-control btn btn-primary" disabled="disabled">Pesquisar</button>
 							</div>
 						</div>
 					</div>

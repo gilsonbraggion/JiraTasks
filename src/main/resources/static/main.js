@@ -40,11 +40,21 @@ $(document).ready(function() {
 	});
 
 	$("#selectBoard").change(function() {
+		
+		$("#conteudoTabela").empty();
+
 		$.ajax({
-			url : "http://localhost:8090/sprint/rest-service.guides.spring.io/greeting"
+			url : "http://localhost:8090/sprint/buscarSprintAtiva?numeroBoard="+this.value
 		}).then(function(data) {
-			$('.greeting-id').append(data.id);
-			$('.greeting-content').append(data.content);
+			
+			$("#pesquisar").removeAttr("disabled")
+
+			var name = data.split("|")[0]; 
+			var id = data.split("|")[1];
+			
+			$("#optionSelected").attr("value", id);
+			$("#optionSelected").attr("label", name);
+			
 		});
 
 	});

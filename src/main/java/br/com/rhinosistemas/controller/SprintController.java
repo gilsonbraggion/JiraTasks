@@ -9,16 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -163,10 +159,22 @@ public class SprintController {
 		return "atividadesAndamento";
 	}
 
-	@PostMapping(value = "/buscarSprintAtiva", produces = { MediaType.APPLICATION_JSON_VALUE })
+	@GetMapping(value = "/buscarSprintAtiva", produces = { MediaType.TEXT_PLAIN_VALUE})
 	@ResponseBody
-	public String buscarSprintAtiva(@ModelAttribute @Valid Filtro filtro, BindingResult result) {
-
+	public String buscarSprintAtiva(HttpSession session, String numeroBoard) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+		
+		Usuario usuario = Util.getUsuarioSession(session);
+		String retornoDadosSprint = JiraUtil.realizarChamadaAgile(usuario, "board/"+numeroBoard+"/sprint?state=active");
+		
+		RetornoJson retornoWorklog = new Gson().fromJson(retornoDadosSprint, RetornoJson.class);
+		
+		for (Sprint sprint : retornoWorklog.getValues()) {
+			if (sprint.getOriginBoardId().equals(numeroBoard) || (numeroBoard.equals("2516") && sprint.getName().contains("KT")) ) {
+				return sprint.getName() + "|" + sprint.getId();
+			} 
+		}
+		
+        		
 		return "";
 	}
 	

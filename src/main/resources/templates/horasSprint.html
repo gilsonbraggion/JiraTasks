@@ -27,7 +27,7 @@
 								<select id="selectBoard" class="form-control" th:field="*{key}">
 									<option value="" label="Selecione..."></option>
 									<option value="2482" label="Bolts"></option>
-									<option value="4269" label="Inimigos HD"></option>
+									<option value="4268" label="Inimigos HD"></option>
 									<option value="2516" label="Kanbantroopers"></option>
 									<option value="2970" label="System Team"></option>
 								</select>
@@ -35,16 +35,12 @@
 							<div class="col">
 								<label >Sprint Ativas</label>
 								<select class="form-control" th:field="*{sprint}">
-									<option value="11567">Hummer Mai</option>
-									<th:block th:each="item : ${sprints}">
-										<option value="NOVOMODELO" th:label="${item}"></option>
-									</th:block>
-									
+									<option id="optionSelected" value="" label=""></option>
 								</select>
 							</div>
 							<div class="col">
 								<label for="exampleInputPassword1">&nbsp;</label>
-								<button type="submit" class="form-control btn btn-primary">Pesquisar</button>
+								<button id="pesquisar" type="submit" class="form-control btn btn-primary" disabled="disabled">Pesquisar</button>
 							</div>
 						</div>
 					</div>
@@ -54,7 +50,7 @@
 						<th:block th:utext="${mensagemErro}"></th:block>
 					</div>
 
-					<div th:if="${listaHoras} != null" >
+					<div th:if="${listaHoras} != null" id="conteudoTabela">
 						<table id="horasLogadas" class="worklog-table table table-striped display">
 							<thead>
 								<tr>

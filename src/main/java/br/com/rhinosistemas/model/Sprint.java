@@ -6,9 +6,11 @@ import java.util.Date;
 
 public class Sprint {
 
+	private String id;
 	private String name;
 	private String startDate;
 	private String endDate;
+	private String originBoardId;
 
 	public String getName() {
 		return name;
@@ -42,5 +44,28 @@ public class Sprint {
 	    Date date = Util.convertStringToDate(getEndDate());
         return Util.stringToDateFinalDia(date);
     }
+	
+	public String getOriginBoardId() {
+		return originBoardId;
+	}
+
+	public void setOriginBoardId(String originBoardId) {
+		this.originBoardId = originBoardId;
+	}
+	
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	@Override
+	public String toString() {
+		return "Sprint [name=" + name + ", startDate=" + startDate + ", endDate=" + endDate + "]";
+	}
+	
+	
 
 }
