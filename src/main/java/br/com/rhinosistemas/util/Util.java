@@ -6,6 +6,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.servlet.http.HttpSession;
+
+import br.com.rhinosistemas.model.Usuario;
+
 public class Util {
 
 	public static Date convertStringToDate(String data) {
@@ -55,5 +59,10 @@ public class Util {
         
         return dataSemHora.getTime();
     }
+	
+	public static Usuario getUsuarioSession(HttpSession session) {
+		return (Usuario) session.getAttribute("usuario");
+	}
+
 
 }

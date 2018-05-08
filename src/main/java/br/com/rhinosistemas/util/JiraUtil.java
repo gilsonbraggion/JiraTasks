@@ -7,7 +7,6 @@ import java.security.cert.X509Certificate;
 import java.util.Base64;
 
 import javax.net.ssl.SSLContext;
-import javax.servlet.http.HttpSession;
 
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -26,10 +25,10 @@ import br.com.rhinosistemas.model.Usuario;
 
 public class JiraUtil {
 
-	public static String realizarChamadaRest(HttpSession session, String parametrosQuery) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+	public static String realizarChamadaRest(Usuario usuario, String parametrosQuery) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 
 		RestTemplate restTemplate = getRestTemplate();
-		HttpHeaders headers = createHeadersWithAuthentication(session);
+		HttpHeaders headers = createHeadersWithAuthentication(usuario);
 		
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		HttpEntity<?> requestEntity = new HttpEntity(headers);
@@ -42,9 +41,9 @@ public class JiraUtil {
 		return rateResponse.getBody();
 	}
 
-	public static String realizarChamadaAgile(HttpSession session, String parametrosQuery) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+	public static String realizarChamadaAgile(Usuario usuario, String parametrosQuery) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 		RestTemplate restTemplate = getRestTemplate();
-		HttpHeaders headers = createHeadersWithAuthentication(session);
+		HttpHeaders headers = createHeadersWithAuthentication(usuario);
 		
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		HttpEntity<?> requestEntity = new HttpEntity(headers);
@@ -57,8 +56,7 @@ public class JiraUtil {
 		return rateResponse.getBody();
 	}
 
-	public static HttpHeaders createHeadersWithAuthentication(HttpSession session) {
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
+	public static HttpHeaders createHeadersWithAuthentication(Usuario usuario) {
 		String plainCreds = usuario.getUsuario() + ":" + usuario.getPassword();
 		byte[] base64CredsBytes = Base64.getEncoder().encode(plainCreds.getBytes());
 		String base64Creds = new String(base64CredsBytes);

@@ -9,12 +9,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
 
@@ -23,9 +29,11 @@ import br.com.rhinosistemas.bean.RetornoJson;
 import br.com.rhinosistemas.model.AtividadesAndamento;
 import br.com.rhinosistemas.model.Filtro;
 import br.com.rhinosistemas.model.Sprint;
+import br.com.rhinosistemas.model.Usuario;
 import br.com.rhinosistemas.util.JiraUtil;
 import br.com.rhinosistemas.util.QueryUtil;
 import br.com.rhinosistemas.util.TabelaUtil;
+import br.com.rhinosistemas.util.Util;
 
 @Controller
 @RequestMapping(value = "/sprint")
@@ -39,6 +47,8 @@ public class SprintController {
 		Filtro filtro = new Filtro();
 		model.addAttribute("filtro", filtro);
 
+		model.addAttribute("sprints", new ArrayList<>());
+
 		return HORAS_SPRINT;
 	}
 
@@ -51,54 +61,60 @@ public class SprintController {
 
 			return HORAS_SPRINT;
 		}
+		
+		Usuario usuario = Util.getUsuarioSession(session);
 
-		String retornoDadosSprint = JiraUtil.realizarChamadaAgile(session, "sprint/" + filtro.getSprint());
-		String retornoJson = JiraUtil.realizarChamadaRest(session, QueryUtil.queryHorasLancadas(filtro.getKey(), filtro.getSprint()));
+		String retornoDadosSprint = JiraUtil.realizarChamadaAgile(usuario, "sprint/" + filtro.getSprint());
+		String retornoJson = JiraUtil.realizarChamadaRest(usuario, QueryUtil.queryHorasLancadas(filtro.getKey(), filtro.getSprint()));
 		RetornoJson retornoWorklog = new Gson().fromJson(retornoJson, RetornoJson.class);
 
 		Sprint sprint = new Gson().fromJson(retornoDadosSprint, Sprint.class);
 
-//		TreeSet<Date> listaDatas = new TreeSet<>(
-//				retornoWorklog.getIssues().stream().
-//				flatMap(e -> e.getFields().getWorklog().getWorklogs().stream()).
-//				map(Worklogs::getStartedDateDay).
-//				filter(date -> date.compareTo(sprint.getStartDateDay()) >= 0 && date.compareTo(sprint.getEndDateDay()) <= 0).
-//				collect(Collectors.toSet()));
+		// TreeSet<Date> listaDatas = new TreeSet<>(
+		// retornoWorklog.getIssues().stream().
+		// flatMap(e -> e.getFields().getWorklog().getWorklogs().stream()).
+		// map(Worklogs::getStartedDateDay).
+		// filter(date -> date.compareTo(sprint.getStartDateDay()) >= 0 &&
+		// date.compareTo(sprint.getEndDateDay()) <= 0).
+		// collect(Collectors.toSet()));
 
-//		Map<String, Map<Date, Long>> collect = retornoWorklog.getIssues().stream().
-//				flatMap(e -> e.getFields().getWorklog().getWorklogs().stream()).
-//				filter(e -> e.getStartedDate().compareTo(sprint.getStartDateDay()) >= 0 && e.getStartedDate().compareTo(sprint.getEndDateDay()) <= 0)
-//				.collect(Collectors.groupingBy(e -> e.getAuthor().getDisplayName(), Collectors.groupingBy(Worklogs::getStartedDateDay, Collectors.summingLong(Worklogs::getHoursSpent))));
-//
-//		List<TableUser> listaHoras = new ArrayList<>();
-//		collect.forEach((k, v) -> {
-//			TableUser user = new TableUser();
-//			user.setUser(k.toUpperCase());
-//
-//			List<WorklogHours> hours = new ArrayList<>();
-//			for (Date date : listaDatas) {
-//				Long time = v.get(date);
-//				if (time == null) {
-//					time = 0l;
-//				}
-//
-//				hours.add(new WorklogHours(date, time));
-//			}
-//			user.setHours(hours);
-//			listaHoras.add(user);
-//		});
-//
-//		// tira o nome cagado da sprint
-//		int delimitador = sprint.getName().indexOf("{");
-//		if (delimitador > 0) {
-//			filtro.setSprintName(sprint.getName().substring(0, delimitador));
-//		} else {
-//			filtro.setSprintName(sprint.getName());
-//		}
-//
-//		model.addAttribute("listaDatas", listaDatas);
-//		model.addAttribute("listaHoras", listaHoras);
-		
+		// Map<String, Map<Date, Long>> collect = retornoWorklog.getIssues().stream().
+		// flatMap(e -> e.getFields().getWorklog().getWorklogs().stream()).
+		// filter(e -> e.getStartedDate().compareTo(sprint.getStartDateDay()) >= 0 &&
+		// e.getStartedDate().compareTo(sprint.getEndDateDay()) <= 0)
+		// .collect(Collectors.groupingBy(e -> e.getAuthor().getDisplayName(),
+		// Collectors.groupingBy(Worklogs::getStartedDateDay,
+		// Collectors.summingLong(Worklogs::getHoursSpent))));
+		//
+		// List<TableUser> listaHoras = new ArrayList<>();
+		// collect.forEach((k, v) -> {
+		// TableUser user = new TableUser();
+		// user.setUser(k.toUpperCase());
+		//
+		// List<WorklogHours> hours = new ArrayList<>();
+		// for (Date date : listaDatas) {
+		// Long time = v.get(date);
+		// if (time == null) {
+		// time = 0l;
+		// }
+		//
+		// hours.add(new WorklogHours(date, time));
+		// }
+		// user.setHours(hours);
+		// listaHoras.add(user);
+		// });
+		//
+		// // tira o nome cagado da sprint
+		// int delimitador = sprint.getName().indexOf("{");
+		// if (delimitador > 0) {
+		// filtro.setSprintName(sprint.getName().substring(0, delimitador));
+		// } else {
+		// filtro.setSprintName(sprint.getName());
+		// }
+		//
+		// model.addAttribute("listaDatas", listaDatas);
+		// model.addAttribute("listaHoras", listaHoras);
+
 		TabelaUtil.setListagemTabela(model, retornoWorklog, sprint.getStartDateDay(), sprint.getEndDateDay());
 
 		model.addAttribute("filtro", filtro);
@@ -117,7 +133,9 @@ public class SprintController {
 
 	@GetMapping(value = "/pesquisarAtividadesAndamento")
 	public String atividadesEmAndamento(HttpSession session, Filtro filtro, Model model) throws URISyntaxException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException, ParseException {
-
+		
+		
+		Usuario usuario = Util.getUsuarioSession(session);
 		if (StringUtils.isBlank(filtro.getKey()) || StringUtils.isBlank(filtro.getSprint())) {
 			model.addAttribute("mensagemErro", "Todos os campos são obrigatórios");
 			model.addAttribute("filtro", filtro);
@@ -125,7 +143,7 @@ public class SprintController {
 		}
 
 		List<AtividadesAndamento> listaAtividades = new ArrayList<>();
-		String retornoJson = JiraUtil.realizarChamadaRest(session, QueryUtil.queryAtividadesAndamento(filtro.getKey(), filtro.getSprint()));
+		String retornoJson = JiraUtil.realizarChamadaRest(usuario, QueryUtil.queryAtividadesAndamento(filtro.getKey(), filtro.getSprint()));
 
 		RetornoJson retornoIssues = new Gson().fromJson(retornoJson, RetornoJson.class);
 
@@ -145,6 +163,13 @@ public class SprintController {
 		return "atividadesAndamento";
 	}
 
+	@PostMapping(value = "/buscarSprintAtiva", produces = { MediaType.APPLICATION_JSON_VALUE })
+	@ResponseBody
+	public String buscarSprintAtiva(@ModelAttribute @Valid Filtro filtro, BindingResult result) {
+
+		return "";
+	}
+	
 	// String jqlQuery = "worklogAuthor ='Alexi de Lara' or worklogAuthor ='ADRIANO
 	// PAVAO' or worklogAuthor ='MONICA REIMBERG DE PAIVA' or worklogAuthor ='LUIS
 	// LINO' or worklogAuthor ='KRISHAN WEISE' or worklogAuthor ='Cesar Roma' or

@@ -36,6 +36,9 @@ public class LoginController {
 		
 		JiraSingleton.getAccountService(session);
 		
+		
+		
+		
 		return "filtros";
 	}
 

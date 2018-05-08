@@ -8,7 +8,6 @@ import java.text.ParseException;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,9 +18,11 @@ import com.google.gson.Gson;
 import br.com.rhinosistemas.bean.RetornoJson;
 import br.com.rhinosistemas.model.Filtro;
 import br.com.rhinosistemas.model.Sprint;
+import br.com.rhinosistemas.model.Usuario;
 import br.com.rhinosistemas.util.JiraUtil;
 import br.com.rhinosistemas.util.QueryUtil;
 import br.com.rhinosistemas.util.TabelaUtil;
+import br.com.rhinosistemas.util.Util;
 
 @Controller
 @RequestMapping(value = "/usuario")
@@ -41,6 +42,7 @@ public class UsuarioController {
 	@GetMapping(value = "/pesquisarHorasLogadasUsuario")
 	public String horasLogadas(HttpSession session, Filtro filtro, Model model) throws URISyntaxException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException, ParseException {
 
+		Usuario usuario = Util.getUsuarioSession(session);
 		if (filtro.getDataInicio() == null) {
 			model.addAttribute("mensagemErro", "Todos os campos são obrigatórios");
 			model.addAttribute("filtro", filtro);
@@ -48,8 +50,8 @@ public class UsuarioController {
 			return HORAS_USUARIO;
 		}
 
-		String retornoDadosSprint = JiraUtil.realizarChamadaAgile(session, "sprint/" + filtro.getSprint());
-		String retornoJson = JiraUtil.realizarChamadaRest(session, QueryUtil.queryHorasPorUsuario());
+		String retornoDadosSprint = JiraUtil.realizarChamadaAgile(usuario, "sprint/" + filtro.getSprint());
+		String retornoJson = JiraUtil.realizarChamadaRest(usuario, QueryUtil.queryHorasPorUsuario());
 		RetornoJson retornoWorklog = new Gson().fromJson(retornoJson, RetornoJson.class);
 
 		Sprint sprint = new Gson().fromJson(retornoDadosSprint, Sprint.class);
