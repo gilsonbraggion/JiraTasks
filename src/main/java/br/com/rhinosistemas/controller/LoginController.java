@@ -16,12 +16,14 @@ import br.com.rhinosistemas.util.JiraSingleton;
 @Controller()
 public class LoginController {
 	
+	public static final String RETORNO_LOGIN = "login";
+
 	@GetMapping(value="")
 	public String getLogin(Model model) {
 		
 		Usuario usuario = new Usuario();
 		model.addAttribute("usuario", usuario);
-		return "login";
+		return RETORNO_LOGIN;
 	}
 	
 	@RequestMapping(value="/login")	
@@ -29,15 +31,12 @@ public class LoginController {
 		
 		if (StringUtils.isBlank(usuario.getUsuario()) || StringUtils.isBlank(usuario.getPassword())) {
 			model.addAttribute("mensagemErro", "Usuário ou senha não preenchidos");
-			return "login";
+			return RETORNO_LOGIN;
 		}
 		
 		session.setAttribute("usuario", usuario);
 		
 		JiraSingleton.getAccountService(session);
-		
-		
-		
 		
 		return "filtros";
 	}

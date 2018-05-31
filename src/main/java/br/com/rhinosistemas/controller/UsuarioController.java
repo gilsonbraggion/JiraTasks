@@ -43,6 +43,11 @@ public class UsuarioController {
 	public String horasLogadas(HttpSession session, Filtro filtro, Model model) throws URISyntaxException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException, ParseException {
 
 		Usuario usuario = Util.getUsuarioSession(session);
+		
+		if (usuario == null) {
+			return LoginController.RETORNO_LOGIN;
+		}
+
 		if (filtro.getDataInicio() == null) {
 			model.addAttribute("mensagemErro", "Todos os campos são obrigatórios");
 			model.addAttribute("filtro", filtro);

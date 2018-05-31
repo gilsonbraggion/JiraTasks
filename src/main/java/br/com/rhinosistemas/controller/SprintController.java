@@ -59,6 +59,10 @@ public class SprintController {
 		}
 		
 		Usuario usuario = Util.getUsuarioSession(session);
+		
+		if (usuario == null) {
+			return LoginController.RETORNO_LOGIN;
+		}
 
 		String retornoDadosSprint = JiraUtil.realizarChamadaAgile(usuario, "sprint/" + filtro.getSprint());
 		String retornoJson = JiraUtil.realizarChamadaRest(usuario, QueryUtil.queryHorasLancadas(filtro.getKey(), filtro.getSprint()));
@@ -130,8 +134,12 @@ public class SprintController {
 	@GetMapping(value = "/pesquisarAtividadesAndamento")
 	public String atividadesEmAndamento(HttpSession session, Filtro filtro, Model model) throws URISyntaxException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException, ParseException {
 		
-		
 		Usuario usuario = Util.getUsuarioSession(session);
+		
+		if (usuario == null) {
+			return LoginController.RETORNO_LOGIN;
+		}
+
 		if (StringUtils.isBlank(filtro.getKey()) || StringUtils.isBlank(filtro.getSprint())) {
 			model.addAttribute("mensagemErro", "Todos os campos são obrigatórios");
 			model.addAttribute("filtro", filtro);
@@ -164,6 +172,11 @@ public class SprintController {
 	public String buscarSprintAtiva(HttpSession session, String numeroBoard) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 		
 		Usuario usuario = Util.getUsuarioSession(session);
+		
+		if (usuario == null) {
+			return LoginController.RETORNO_LOGIN;
+		}
+
 		String retornoDadosSprint = JiraUtil.realizarChamadaAgile(usuario, "board/"+numeroBoard+"/sprint?state=active");
 		
 		RetornoJson retornoWorklog = new Gson().fromJson(retornoDadosSprint, RetornoJson.class);
