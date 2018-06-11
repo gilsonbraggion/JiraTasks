@@ -21,11 +21,12 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import br.com.rhinosistemas.config.JiraConfig;
 import br.com.rhinosistemas.model.Usuario;
 
 public class JiraUtil {
 
-	public static String realizarChamadaRest(Usuario usuario, String parametrosQuery) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+    public static String realizarChamadaRest(JiraConfig config, Usuario usuario, String parametrosQuery) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 
 		RestTemplate restTemplate = getRestTemplate();
 		HttpHeaders headers = createHeadersWithAuthentication(usuario);
@@ -33,7 +34,7 @@ public class JiraUtil {
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		HttpEntity<?> requestEntity = new HttpEntity(headers);
 
-		String transactionUrl = "https://jira.ci.gsnet.corp/rest/api/2/search?jql="+parametrosQuery;
+		String transactionUrl = config.getUrl() + "/rest/api/2/search?jql="+parametrosQuery;
 		ResponseEntity<String> rateResponse = restTemplate.exchange(transactionUrl, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<String>() {
 		});
 
@@ -41,14 +42,14 @@ public class JiraUtil {
 		return rateResponse.getBody();
 	}
 
-	public static String realizarChamadaAgile(Usuario usuario, String parametrosQuery) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+	public static String realizarChamadaAgile(JiraConfig config, Usuario usuario, String parametrosQuery) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 		RestTemplate restTemplate = getRestTemplate();
 		HttpHeaders headers = createHeadersWithAuthentication(usuario);
 		
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		HttpEntity<?> requestEntity = new HttpEntity(headers);
 
-		String transactionUrl = "https://jira.ci.gsnet.corp/rest/agile/1.0/"+parametrosQuery;
+		String transactionUrl = config.getUrl() + "/rest/agile/1.0/"+parametrosQuery;
 		ResponseEntity<String> rateResponse = restTemplate.exchange(transactionUrl, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<String>() {
 		});
 		

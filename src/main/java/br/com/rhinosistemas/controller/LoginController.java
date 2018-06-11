@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,9 @@ import br.com.rhinosistemas.util.JiraSingleton;
 public class LoginController {
 	
 	public static final String RETORNO_LOGIN = "login";
+	
+	@Autowired
+	private JiraSingleton jiraSingleton;
 
 	@GetMapping(value="")
 	public String getLogin(Model model) {
@@ -36,7 +40,7 @@ public class LoginController {
 		
 		session.setAttribute("usuario", usuario);
 		
-		JiraSingleton.getAccountService(session);
+		jiraSingleton.getAccountService();
 		
 		return "filtros";
 	}

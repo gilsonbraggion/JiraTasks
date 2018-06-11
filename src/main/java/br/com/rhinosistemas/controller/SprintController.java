@@ -11,6 +11,7 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +23,7 @@ import com.google.gson.Gson;
 
 import br.com.rhinosistemas.bean.Issues;
 import br.com.rhinosistemas.bean.RetornoJson;
+import br.com.rhinosistemas.config.JiraConfig;
 import br.com.rhinosistemas.model.AtividadesAndamento;
 import br.com.rhinosistemas.model.Filtro;
 import br.com.rhinosistemas.model.Sprint;
@@ -36,6 +38,9 @@ import br.com.rhinosistemas.util.Util;
 public class SprintController {
 
 	private static final String HORAS_SPRINT = "horasSprint";
+	
+	@Autowired
+	private JiraConfig config;
 
 	@GetMapping(value = "/horasLogadasSprint")
 	public String iniciarHorasLogadas(HttpSession session, Model model) throws URISyntaxException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
@@ -64,8 +69,8 @@ public class SprintController {
 			return LoginController.RETORNO_LOGIN;
 		}
 
-		String retornoDadosSprint = JiraUtil.realizarChamadaAgile(usuario, "sprint/" + filtro.getSprint());
-		String retornoJson = JiraUtil.realizarChamadaRest(usuario, QueryUtil.queryHorasLancadas(filtro.getKey(), filtro.getSprint()));
+		String retornoDadosSprint = JiraUtil.realizarChamadaAgile(config, usuario, "sprint/" + filtro.getSprint());
+		String retornoJson = JiraUtil.realizarChamadaRest(config, usuario, QueryUtil.queryHorasLancadas(filtro.getKey(), filtro.getSprint()));
 		RetornoJson retornoWorklog = new Gson().fromJson(retornoJson, RetornoJson.class);
 
 		Sprint sprint = new Gson().fromJson(retornoDadosSprint, Sprint.class);
@@ -147,7 +152,7 @@ public class SprintController {
 		}
 
 		List<AtividadesAndamento> listaAtividades = new ArrayList<>();
-		String retornoJson = JiraUtil.realizarChamadaRest(usuario, QueryUtil.queryAtividadesAndamento(filtro.getKey(), filtro.getSprint()));
+		String retornoJson = JiraUtil.realizarChamadaRest(config, usuario, QueryUtil.queryAtividadesAndamento(filtro.getKey(), filtro.getSprint()));
 
 		RetornoJson retornoIssues = new Gson().fromJson(retornoJson, RetornoJson.class);
 
@@ -177,7 +182,7 @@ public class SprintController {
 			return LoginController.RETORNO_LOGIN;
 		}
 
-		String retornoDadosSprint = JiraUtil.realizarChamadaAgile(usuario, "board/"+numeroBoard+"/sprint?state=active");
+		String retornoDadosSprint = JiraUtil.realizarChamadaAgile(config, usuario, "board/"+numeroBoard+"/sprint?state=active");
 		
 		RetornoJson retornoWorklog = new Gson().fromJson(retornoDadosSprint, RetornoJson.class);
 		
