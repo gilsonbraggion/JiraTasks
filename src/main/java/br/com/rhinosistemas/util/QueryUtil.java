@@ -28,7 +28,7 @@ public class QueryUtil {
 	 * 
 	 * @return
 	 */
-	public static String queryAtividadesAndamento(String projeto, String sprint) {
+	public static String queryAtividadesAndamento(String sprint) {
 
 		StringBuilder builder = new StringBuilder();
 
@@ -44,20 +44,6 @@ public class QueryUtil {
 	
 	public static String queryHorasPorUsuario() {
 		
-		StringBuilder builder = new StringBuilder();
-
-		builder.append("worklogAuthor = 'Gilson Braggion' or worklogAuthor ='Alexi de Lara'");
-		builder.append(" AND worklogdate >= 2018-02-10");
-		
-		builder.append(" ORDER BY assignee ASC");
-
-		builder.append("&");
-		builder.append("fields=worklog");
-		builder.append("&");
-		builder.append("maxResults=9999");
-		
-		return builder.toString();
-		
 		// String jqlQuery = "worklogAuthor ='Alexi de Lara' or worklogAuthor ='ADRIANO
 		// PAVAO' or worklogAuthor ='MONICA REIMBERG DE PAIVA' or worklogAuthor ='LUIS
 		// LINO' or worklogAuthor ='KRISHAN WEISE' or worklogAuthor ='Cesar Roma' or
@@ -69,34 +55,7 @@ public class QueryUtil {
 		// ='RICARDO JUNIOR' or worklogAuthor ='FERNANDO GUIMARAES' AND worklogdate >=
 		// 2018-01-01";
 		
-	}
-
-	public static String querySprintPorBoard() {
-		
-		StringBuilder builder = new StringBuilder();
-		
-		builder.append("worklogAuthor = 'Gilson Braggion' or worklogAuthor ='Alexi de Lara'");
-		builder.append(" AND worklogdate >= 2018-02-10");
-		
-		builder.append(" ORDER BY assignee ASC");
-		
-		builder.append("&");
-		builder.append("fields=worklog");
-		builder.append("&");
-		builder.append("maxResults=9999");
-		
-		return builder.toString();
-		
-		// String jqlQuery = "worklogAuthor ='Alexi de Lara' or worklogAuthor ='ADRIANO
-		// PAVAO' or worklogAuthor ='MONICA REIMBERG DE PAIVA' or worklogAuthor ='LUIS
-		// LINO' or worklogAuthor ='KRISHAN WEISE' or worklogAuthor ='Cesar Roma' or
-		// worklogAuthor ='Gabriel Silva' or worklogAuthor ='William Nascimento' or
-		// worklogAuthor ='JONAS PEREZ' or worklogAuthor ='Eric Rocha' or worklogAuthor
-		// ='FLAVIA ROSA' or worklogAuthor ='GUILHERME GUIARO' or worklogAuthor ='LUIZ
-		// SILVA' or worklogAuthor ='NAYRA SCHALL' or worklogAuthor ='MARCO ANTONIO
-		// Sousa' or worklogAuthor ='FERNANDO VICTOR ALCANTARA GORETTI' or worklogAuthor
-		// ='RICARDO JUNIOR' or worklogAuthor ='FERNANDO GUIMARAES' AND worklogdate >=
-		// 2018-01-01";
+		return "";
 		
 	}
 

@@ -12,12 +12,10 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
 
@@ -56,7 +54,7 @@ public class SprintController {
 	@GetMapping(value = "/pesquisarHorasLogadasSprint")
 	public String horasLogadas(HttpSession session, Filtro filtro, Model model) throws URISyntaxException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException, ParseException {
 
-		if (StringUtils.isBlank(filtro.getKey()) || StringUtils.isBlank(filtro.getSprint())) {
+		if (StringUtils.isBlank(filtro.getSprint())) {
 			model.addAttribute("mensagemErro", "Todos os campos são obrigatórios");
 			model.addAttribute("filtro", filtro);
 
@@ -74,51 +72,6 @@ public class SprintController {
 		RetornoJson retornoWorklog = new Gson().fromJson(retornoJson, RetornoJson.class);
 
 		Sprint sprint = new Gson().fromJson(retornoDadosSprint, Sprint.class);
-
-		// TreeSet<Date> listaDatas = new TreeSet<>(
-		// retornoWorklog.getIssues().stream().
-		// flatMap(e -> e.getFields().getWorklog().getWorklogs().stream()).
-		// map(Worklogs::getStartedDateDay).
-		// filter(date -> date.compareTo(sprint.getStartDateDay()) >= 0 &&
-		// date.compareTo(sprint.getEndDateDay()) <= 0).
-		// collect(Collectors.toSet()));
-
-		// Map<String, Map<Date, Long>> collect = retornoWorklog.getIssues().stream().
-		// flatMap(e -> e.getFields().getWorklog().getWorklogs().stream()).
-		// filter(e -> e.getStartedDate().compareTo(sprint.getStartDateDay()) >= 0 &&
-		// e.getStartedDate().compareTo(sprint.getEndDateDay()) <= 0)
-		// .collect(Collectors.groupingBy(e -> e.getAuthor().getDisplayName(),
-		// Collectors.groupingBy(Worklogs::getStartedDateDay,
-		// Collectors.summingLong(Worklogs::getHoursSpent))));
-		//
-		// List<TableUser> listaHoras = new ArrayList<>();
-		// collect.forEach((k, v) -> {
-		// TableUser user = new TableUser();
-		// user.setUser(k.toUpperCase());
-		//
-		// List<WorklogHours> hours = new ArrayList<>();
-		// for (Date date : listaDatas) {
-		// Long time = v.get(date);
-		// if (time == null) {
-		// time = 0l;
-		// }
-		//
-		// hours.add(new WorklogHours(date, time));
-		// }
-		// user.setHours(hours);
-		// listaHoras.add(user);
-		// });
-		//
-		// // tira o nome cagado da sprint
-		// int delimitador = sprint.getName().indexOf("{");
-		// if (delimitador > 0) {
-		// filtro.setSprintName(sprint.getName().substring(0, delimitador));
-		// } else {
-		// filtro.setSprintName(sprint.getName());
-		// }
-		//
-		// model.addAttribute("listaDatas", listaDatas);
-		// model.addAttribute("listaHoras", listaHoras);
 
 		TabelaUtil.setListagemTabela(model, retornoWorklog, sprint.getStartDateDay(), sprint.getEndDateDay());
 
@@ -145,14 +98,14 @@ public class SprintController {
 			return LoginController.RETORNO_LOGIN;
 		}
 
-		if (StringUtils.isBlank(filtro.getKey()) || StringUtils.isBlank(filtro.getSprint())) {
+		if (StringUtils.isBlank(filtro.getSprint())) {
 			model.addAttribute("mensagemErro", "Todos os campos são obrigatórios");
 			model.addAttribute("filtro", filtro);
 			return "atividadesAndamento";
 		}
 
 		List<AtividadesAndamento> listaAtividades = new ArrayList<>();
-		String retornoJson = JiraUtil.realizarChamadaRest(config, usuario, QueryUtil.queryAtividadesAndamento(filtro.getKey(), filtro.getSprint()));
+		String retornoJson = JiraUtil.realizarChamadaRest(config, usuario, QueryUtil.queryAtividadesAndamento(filtro.getSprint()));
 
 		RetornoJson retornoIssues = new Gson().fromJson(retornoJson, RetornoJson.class);
 
@@ -172,30 +125,6 @@ public class SprintController {
 		return "atividadesAndamento";
 	}
 
-	@GetMapping(value = "/buscarSprintAtiva", produces = { MediaType.TEXT_PLAIN_VALUE})
-	@ResponseBody
-	public String buscarSprintAtiva(HttpSession session, String numeroBoard) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
-		
-		Usuario usuario = Util.getUsuarioSession(session);
-		
-		if (usuario == null) {
-			return LoginController.RETORNO_LOGIN;
-		}
-
-		String retornoDadosSprint = JiraUtil.realizarChamadaAgile(config, usuario, "board/"+numeroBoard+"/sprint?state=active");
-		
-		RetornoJson retornoWorklog = new Gson().fromJson(retornoDadosSprint, RetornoJson.class);
-		
-		for (Sprint sprint : retornoWorklog.getValues()) {
-			if (sprint.getOriginBoardId().equals(numeroBoard) || (numeroBoard.equals("2516") && sprint.getName().contains("KT")) ) {
-				return sprint.getName() + "|" + sprint.getId();
-			} 
-		}
-		
-        		
-		return "";
-	}
-	
 	// String jqlQuery = "worklogAuthor ='Alexi de Lara' or worklogAuthor ='ADRIANO
 	// PAVAO' or worklogAuthor ='MONICA REIMBERG DE PAIVA' or worklogAuthor ='LUIS
 	// LINO' or worklogAuthor ='KRISHAN WEISE' or worklogAuthor ='Cesar Roma' or

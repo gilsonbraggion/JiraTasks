@@ -1,17 +1,5 @@
 package br.com.rhinosistemas.controller;
 
-import br.com.rhinosistemas.bean.RetornoJson;
-import br.com.rhinosistemas.config.JiraConfig;
-import br.com.rhinosistemas.model.Filtro;
-import br.com.rhinosistemas.model.Sprint;
-import br.com.rhinosistemas.model.Usuario;
-import br.com.rhinosistemas.util.JiraUtil;
-import br.com.rhinosistemas.util.QueryUtil;
-import br.com.rhinosistemas.util.TabelaUtil;
-import br.com.rhinosistemas.util.Util;
-
-import com.google.gson.Gson;
-
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -25,6 +13,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.google.gson.Gson;
+
+import br.com.rhinosistemas.bean.RetornoJson;
+import br.com.rhinosistemas.config.JiraConfig;
+import br.com.rhinosistemas.model.Filtro;
+import br.com.rhinosistemas.model.Sprint;
+import br.com.rhinosistemas.model.Usuario;
+import br.com.rhinosistemas.util.JiraUtil;
+import br.com.rhinosistemas.util.QueryUtil;
+import br.com.rhinosistemas.util.TabelaUtil;
+import br.com.rhinosistemas.util.Util;
 
 @Controller
 @RequestMapping(value = "/usuario")

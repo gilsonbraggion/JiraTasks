@@ -1,11 +1,11 @@
 package br.com.rhinosistemas.bean;
 
-import br.com.rhinosistemas.util.Util;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import br.com.rhinosistemas.util.Util;
 
 public class Worklogs {
 

@@ -30,6 +30,7 @@ public class TabelaUtil {
 
 			List<WorklogHours> hours = new ArrayList<>();
 			for (Date date : listaDatas) {
+				
 				Long time = v.get(date);
 				if (time == null) {
 					time = 0l;

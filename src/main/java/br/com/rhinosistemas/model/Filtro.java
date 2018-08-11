@@ -10,8 +10,10 @@ public class Filtro implements Serializable {
 	private String key;
 	private String sprint;
 	private String fields;
-	private Date dataInicio;
 	private String sprintName;
+	private String numeroUsuario;
+	private Date dataInicio;
+	private String dataInicioHoras;
 
 	public String getKey() {
 		return key;
@@ -51,6 +53,22 @@ public class Filtro implements Serializable {
 
 	public void setDataInicio(Date dataInicio) {
 		this.dataInicio = dataInicio;
+	}
+
+	public String getNumeroUsuario() {
+		return numeroUsuario;
+	}
+
+	public void setNumeroUsuario(String numeroUsuario) {
+		this.numeroUsuario = numeroUsuario;
+	}
+
+	public String getDataInicioHoras() {
+		return dataInicioHoras;
+	}
+
+	public void setDataInicioHoras(String dataInicioHoras) {
+		this.dataInicioHoras = dataInicioHoras;
 	}
 
 }

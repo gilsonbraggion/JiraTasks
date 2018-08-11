@@ -1,8 +1,8 @@
 package br.com.rhinosistemas.model;
 
-import br.com.rhinosistemas.util.Util;
-
 import java.util.Date;
+
+import br.com.rhinosistemas.util.Util;
 
 public class Sprint {
 

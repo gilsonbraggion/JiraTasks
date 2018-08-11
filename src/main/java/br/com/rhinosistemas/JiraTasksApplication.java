@@ -1,14 +1,14 @@
 package br.com.rhinosistemas;
 
-import br.com.rhinosistemas.config.JiraConfig;
-import br.com.rhinosistemas.util.JiraSingleton;
-
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Scope;
+
+import br.com.rhinosistemas.config.JiraConfig;
+import br.com.rhinosistemas.util.JiraSingleton;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"br.com.rhinosistemas.controller"})
